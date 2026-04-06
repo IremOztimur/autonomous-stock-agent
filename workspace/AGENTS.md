@@ -21,7 +21,7 @@ Skills live in `skills/`. Each skill has its own folder with a `SKILL.md`. Read 
 **Available skills:**
 
 - **stock_analysis** — Deep analysis of individual stocks or the overall portfolio. Covers fundamentals, technicals, analyst sentiment, risk assessment, and actionable recommendations. Use this whenever the user asks to analyze, evaluate, compare, or review any stock or their portfolio.
-- **portfolio_management** — Track and manage the user's stock portfolio. Handles adding/removing stocks, updating prices, and maintaining the dashboard data files. Use this whenever the user mentions buying, selling, adding, or removing stocks.
+- **portfolio_management** — Track and manage the user's stock portfolio and watchlist. Handles adding/removing stocks, updating prices, managing tracked stocks, and maintaining the dashboard data files. Use this whenever the user mentions buying, selling, adding, removing, tracking, or watching stocks.
 
 Structure:
 ```
