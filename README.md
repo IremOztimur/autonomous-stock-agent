@@ -2,7 +2,7 @@
 
 An autonomous stock portfolio agent built with [Upsonic](https://github.com/Upsonic/Upsonic). It tracks your stocks, runs analysis, and manages a live dashboard, all through Telegram conversations on your phone.
 
-https://github.com/user-attachments/assets/7991d668-dbd8-4344-8e42-a87421fed84f
+https://github.com/user-attachments/assets/55f04c5d-a0a4-4538-a42d-9e64495a0bbc
 
 ## What This Is
 
