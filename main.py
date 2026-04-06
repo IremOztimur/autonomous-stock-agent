@@ -10,16 +10,21 @@ from dotenv import load_dotenv
 from upsonic import AutonomousAgent, Task
 from upsonic.tools.common_tools.financial_tools import YFinanceTools
 from upsonic.interfaces import InterfaceManager, TelegramInterface, InterfaceMode
+# from upsonic.integrations.promptlayer import PromptLayer
 
 load_dotenv()
 
 finance_tools = YFinanceTools()
 finance_tools._enable_all_tools()
 
+# pl = PromptLayer()
+
 agent = AutonomousAgent(
     model="anthropic/claude-sonnet-4-6",
     workspace=os.path.join(os.path.dirname(__file__), "workspace"),
     tools=finance_tools.functions(),
+    # promptlayer=pl,
+    print=True
 )
 
 telegram = TelegramInterface(
@@ -35,3 +40,4 @@ manager = InterfaceManager(interfaces=[telegram])
 
 if __name__ == "__main__":
     manager.serve(host="0.0.0.0", port=8000)
+    # pl.shutdown()

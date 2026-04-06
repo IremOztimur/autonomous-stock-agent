@@ -14,9 +14,10 @@ import plotly.graph_objects as go
 import plotly.express as px
 import pandas as pd
 
-WORKSPACE = os.path.join(os.path.dirname(__file__), "workspace")
+WORKSPACE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "workspace")
 DATA_DIR = os.path.join(WORKSPACE, "data")
 PORTFOLIO_FILE = os.path.join(DATA_DIR, "portfolio.json")
+WATCHLIST_FILE = os.path.join(DATA_DIR, "watchlist.json")
 ANALYSIS_DIR = os.path.join(DATA_DIR, "analysis")
 
 # --- Theme ---
@@ -174,6 +175,13 @@ def load_portfolio():
     if not os.path.exists(PORTFOLIO_FILE):
         return {"stocks": [], "last_updated": None}
     with open(PORTFOLIO_FILE, "r") as f:
+        return json.load(f)
+
+
+def load_watchlist():
+    if not os.path.exists(WATCHLIST_FILE):
+        return {"stocks": [], "last_updated": None}
+    with open(WATCHLIST_FILE, "r") as f:
         return json.load(f)
 
 
@@ -354,6 +362,63 @@ def render_portfolio_charts(portfolio, theme):
             st.plotly_chart(fig, use_container_width=True)
 
 
+def render_watchlist_row(stock, theme):
+    symbol = stock.get("symbol", "???")
+    name = stock.get("name", "")
+    current_price = stock.get("current_price", 0)
+    price_at_add = stock.get("price_at_add", 0)
+    change_pct = stock.get("change_pct", 0)
+    added_date = stock.get("added_date", "—")
+    note = stock.get("note", "")
+
+    change_cls = "gain-pos" if change_pct >= 0 else "gain-neg"
+    change_sign = "+" if change_pct >= 0 else ""
+
+    note_html = f'<div style="font-size:0.8rem; color:{theme["muted"]}; margin-top:4px; font-style:italic">{note}</div>' if note else ""
+
+    return f"""
+    <div class="stock-row">
+        <div style="min-width:160px">
+            <div class="stock-symbol">{symbol}</div>
+            <div class="stock-name">{name}</div>
+            {note_html}
+        </div>
+        <div class="stock-field">
+            <div class="stock-field-label">Price</div>
+            <div class="stock-field-value">${current_price:,.2f}</div>
+        </div>
+        <div class="stock-field">
+            <div class="stock-field-label">Price at Add</div>
+            <div class="stock-field-value">${price_at_add:,.2f}</div>
+        </div>
+        <div class="stock-field">
+            <div class="stock-field-label">Change</div>
+            <div class="stock-field-value {change_cls}">{change_sign}{change_pct:.2f}%</div>
+        </div>
+        <div class="stock-field">
+            <div class="stock-field-label">Tracking Since</div>
+            <div class="stock-field-value">{added_date}</div>
+        </div>
+    </div>
+    """
+
+
+def render_watchlist(watchlist, theme):
+    stocks = watchlist.get("stocks", [])
+    if not stocks:
+        st.markdown("""
+        <div class="empty-state">
+            <h3>No tracked stocks yet</h3>
+            <p>Tell your agent on Telegram to track a stock you're interested in.</p>
+        </div>
+        """, unsafe_allow_html=True)
+        return
+
+    st.markdown('<div class="section-header">Tracking</div>', unsafe_allow_html=True)
+    for stock in stocks:
+        st.markdown(render_watchlist_row(stock, theme), unsafe_allow_html=True)
+
+
 def render_analyses(analyses, theme):
     if not analyses:
         st.markdown("""
@@ -413,7 +478,7 @@ def main():
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    tab1, tab2 = st.tabs(["Portfolio", "Analysis Reports"])
+    tab1, tab2, tab3 = st.tabs(["Portfolio", "Watchlist", "Analysis Reports"])
 
     with tab1:
         render_portfolio_overview(portfolio, theme)
@@ -421,6 +486,10 @@ def main():
         render_portfolio_charts(portfolio, theme)
 
     with tab2:
+        watchlist = load_watchlist()
+        render_watchlist(watchlist, theme)
+
+    with tab3:
         analyses = load_analyses()
         render_analyses(analyses, theme)
 
